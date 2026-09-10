@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #f0eeec;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Noto Sans TC', sans-serif;
+  padding: 20px;
+}
+.controls {
+  display: flex;
+  justify-content: flex-end;
+  max-width: 794px;
+  margin: 0 auto 12px;
+}
+.btn-pdf {
+  background: #6a5fc4;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+}
+.btn-pdf:hover { background: #5a4fb4; }
+.page-wrap { width: 100%; max-width: 794px; margin: 0 auto; }
+.page {
+  width: 100%;
+  min-height: 1050px;
+  background: #f7f6f4;
+  color: #242229;
+  padding: 56px 64px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+}
+header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 2px solid #6a5fc4;
+  padding-bottom: 16px;
+}
+h1 { font-weight: 500; font-size: 30px; letter-spacing: 0.02em; color: #242229; }
+.subtitle { font-size: 12px; color: #8a8592; letter-spacing: 0.08em; }
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: 1px solid #d8d4dc;
+}
+.field-cell { padding: 12px 16px; }
+.field-cell:nth-child(1) { border-bottom: 1px solid #d8d4dc; border-right: 1px solid #d8d4dc; }
+.field-cell:nth-child(2) { border-bottom: 1px solid #d8d4dc; }
+.field-cell:nth-child(3) { border-right: 1px solid #d8d4dc; }
+.field-label { font-size: 11px; color: #6a5fc4; letter-spacing: 0.06em; margin-bottom: 6px; }
+.field-input { font-size: 14px; outline: none; min-height: 20px; color: #242229; }
+.field-input:focus { background: rgba(106,95,196,0.04); border-radius: 2px; }
+.content-area {
+  border: 1px solid #d8d4dc;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.content-label { font-size: 11px; color: #6a5fc4; letter-spacing: 0.06em; padding: 12px 16px 0; }
+.content-lines {
+  flex: 1;
+  margin: 0 16px 16px;
+  background-image: repeating-linear-gradient(to bottom, transparent, transparent 27px, #e3e0e6 28px);
+  min-height: 500px;
+  outline: none;
+  line-height: 28px;
+  padding-top: 1px;
+  font-size: 14px;
+}
+.page-footer {
+  text-align: right;
+  font-size: 11px;
+  color: #b0aab8;
+  letter-spacing: 0.1em;
+  padding-top: 4px;
+}
+@media print {
+  body { background: none; padding: 0; }
+  .controls { display: none; }
+  .page { box-shadow: none; min-height: 297mm; padding: 20mm 22mm 16mm; }
+}
+</style>
+</head>
+<body>
+<div style="width:100%">
+  <div class="controls no-print">
+    <button class="btn-pdf" onclick="window.print()">列印 / 存成 PDF</button>
+  </div>
+  <div class="page-wrap">
+    <div class="page" lang="zh-Hant">
+
+      <header>
+        <h1>會議記錄表</h1>
+        <div class="subtitle">MEETING MINUTES</div>
+      </header>
+
+      <div class="info-grid">
+        <div class="field-cell">
+          <div class="field-label">日期</div>
+          <div class="field-input" contenteditable="true">____&nbsp;年&nbsp;&nbsp;____&nbsp;月&nbsp;&nbsp;____&nbsp;日</div>
+        </div>
+        <div class="field-cell">
+          <div class="field-label">會議名稱</div>
+          <div class="field-input" contenteditable="true">&nbsp;</div>
+        </div>
+        <div class="field-cell">
+          <div class="field-label">地點</div>
+          <div class="field-input" contenteditable="true">&nbsp;</div>
+        </div>
+        <div class="field-cell">
+          <div class="field-label">記錄人</div>
+          <div class="field-input" contenteditable="true">&nbsp;</div>
+        </div>
+      </div>
+
+      <div class="content-area">
+        <div class="content-label">會議內容</div>
+        <div class="content-lines" contenteditable="true"></div>
+      </div>
+
+      <div class="page-footer">騰璧設計</div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>
