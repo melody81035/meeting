@@ -74,7 +74,12 @@ h1 { font-weight: 500; font-size: 30px; letter-spacing: 0.02em; color: #242229; 
 .content-lines {
   flex: 1;
   margin: 0 16px 16px;
-  background-image: repeating-linear-gradient(to bottom, transparent, transparent 27px, #e3e0e6 28px);
+  background-color: #f7f6f4;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    #f7f6f4, #f7f6f4 27px,
+    #e3e0e6 28px
+  );
   min-height: 500px;
   outline: none;
   line-height: 28px;
@@ -88,10 +93,39 @@ h1 { font-weight: 500; font-size: 30px; letter-spacing: 0.02em; color: #242229; 
   letter-spacing: 0.1em;
   padding-top: 4px;
 }
+
+/* ── 修復：Safari 列印/PDF 黑背景問題 ── */
 @media print {
   body { background: none; padding: 0; }
   .controls { display: none; }
-  .page { box-shadow: none; min-height: 297mm; padding: 20mm 22mm 16mm; }
+  .page {
+    box-shadow: none;
+    min-height: 297mm;
+    padding: 20mm 22mm 16mm;
+    background: #f7f6f4 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* 把 transparent 全部換成實際背景色，Safari 不會變黑 */
+  .content-lines {
+    background-color: #f7f6f4 !important;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      #f7f6f4 0px, #f7f6f4 27px,
+      #e3e0e6 27px, #e3e0e6 28px
+    ) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  [contenteditable],
+  .field-input {
+    background-color: #f7f6f4 !important;
+    color: #242229 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 }
 </style>
 </head>
@@ -137,5 +171,22 @@ h1 { font-weight: 500; font-size: 30px; letter-spacing: 0.02em; color: #242229; 
     </div>
   </div>
 </div>
+
+<script>
+  /* Safari 列印前暫時移除 contenteditable，列印後還原 */
+  window.addEventListener('beforeprint', function () {
+    document.querySelectorAll('[contenteditable]').forEach(function (el) {
+      el.dataset.wasEditable = 'true';
+      el.removeAttribute('contenteditable');
+    });
+  });
+
+  window.addEventListener('afterprint', function () {
+    document.querySelectorAll('[data-was-editable]').forEach(function (el) {
+      el.setAttribute('contenteditable', 'true');
+      delete el.dataset.wasEditable;
+    });
+  });
+</script>
 </body>
 </html>
