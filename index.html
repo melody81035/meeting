@@ -24,13 +24,15 @@ body {
   background: #6a5fc4;
   color: white;
   border: none;
-  padding: 8px 18px;
+  padding: 10px 20px;
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
   font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
 }
-.btn-pdf:hover { background: #5a4fb4; }
+.btn-pdf:active { background: #5a4fb4; }
+.btn-pdf:disabled { background: #9b94d8; cursor: default; }
 .page-wrap { width: 100%; max-width: 794px; margin: 0 auto; }
 .page {
   width: 100%;
@@ -77,35 +79,22 @@ h1 { font-weight: 500; font-size: 30px; letter-spacing: 0.02em; color: #242229; 
   flex-direction: column;
 }
 .content-label { font-size: 11px; color: #6a5fc4; letter-spacing: 0.06em; padding: 12px 16px 0; }
-
-/* 線條背景放在不可編輯的 wrapper，避開 Safari 的 contenteditable 黑背景 bug */
-.content-wrapper {
+.content-lines {
   flex: 1;
   margin: 0 16px 16px;
-  position: relative;
-  min-height: 500px;
   background-color: #f7f6f4;
   background-image: repeating-linear-gradient(
     to bottom,
     #f7f6f4 0px, #f7f6f4 27px,
     #e3e0e6 27px, #e3e0e6 28px
   );
-  -webkit-print-color-adjust: exact;
-  print-color-adjust: exact;
-}
-.content-lines {
-  position: absolute;
-  inset: 0;
+  min-height: 500px;
   outline: none;
   line-height: 28px;
   padding-top: 1px;
-  padding-left: 2px;
   font-size: 14px;
   color: #242229;
-  background: none;
-  overflow: visible;
 }
-
 .page-footer {
   text-align: right;
   font-size: 11px;
@@ -114,22 +103,37 @@ h1 { font-weight: 500; font-size: 30px; letter-spacing: 0.02em; color: #242229; 
   padding-top: 4px;
 }
 
+/* 提示訊息 */
+#hint {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #242229;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  text-align: center;
+  z-index: 999;
+  max-width: 320px;
+  line-height: 1.5;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
 @media print {
   body { background: none; padding: 0; }
   .controls { display: none; }
-  .page { box-shadow: none; min-height: 297mm; padding: 20mm 22mm 16mm; }
-  .content-wrapper {
+  #hint { display: none !important; }
+  .page { box-shadow: none; min-height: 297mm; padding: 20mm 22mm 16mm; background: #f7f6f4 !important; }
+  .content-lines {
     background-color: #f7f6f4 !important;
     background-image: repeating-linear-gradient(
-      to bottom,
-      #f7f6f4 0px, #f7f6f4 27px,
-      #e3e0e6 27px, #e3e0e6 28px
+      to bottom, #f7f6f4 0px, #f7f6f4 27px, #e3e0e6 27px, #e3e0e6 28px
     ) !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-  }
-  .content-lines {
-    background: none !important;
     color: #242229 !important;
   }
   .field-input {
@@ -138,22 +142,21 @@ h1 { font-weight: 500; font-size: 30px; letter-spacing: 0.02em; color: #242229; 
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 }
 </style>
 </head>
 <body>
 <div style="width:100%">
   <div class="controls">
-    <button class="btn-pdf" id="btnPdf" onclick="doPrint()">列印 / 存成 PDF</button>
+    <button class="btn-pdf" id="btnPdf">列印 / 存成 PDF</button>
   </div>
   <div class="page-wrap">
     <div class="page" id="mainPage" lang="zh-Hant">
-
       <header>
         <h1>會議記錄表</h1>
         <div class="subtitle">MEETING MINUTES</div>
       </header>
-
       <div class="info-grid">
         <div class="field-cell">
           <div class="field-label">日期</div>
@@ -172,56 +175,79 @@ h1 { font-weight: 500; font-size: 30px; letter-spacing: 0.02em; color: #242229; 
           <div class="field-input" contenteditable="true">&nbsp;</div>
         </div>
       </div>
-
       <div class="content-area">
         <div class="content-label">會議內容</div>
-        <!-- wrapper 負責畫線（非 contenteditable），lines 負責打字（無背景） -->
-        <div class="content-wrapper">
-          <div class="content-lines" contenteditable="true"></div>
-        </div>
+        <div class="content-lines" contenteditable="true"></div>
       </div>
-
       <div class="page-footer">騰璧設計</div>
-
     </div>
   </div>
 </div>
 
+<div id="hint"></div>
+
 <script>
-function doPrint() {
-  var btn = document.getElementById('btnPdf');
-  btn.disabled = true;
-  btn.textContent = '準備中…';
+function showHint(msg, duration) {
+  var h = document.getElementById('hint');
+  h.textContent = msg;
+  h.style.display = 'block';
+  setTimeout(function() { h.style.display = 'none'; }, duration || 4000);
+}
 
-  // 移除 contenteditable 並設定明確背景色
-  var editables = document.querySelectorAll('[contenteditable]');
-  var i;
-  for (i = 0; i < editables.length; i++) {
-    editables[i].removeAttribute('contenteditable');
-    editables[i].style.background = 'none';
-    editables[i].style.backgroundColor = 'transparent';
-    editables[i].style.color = '#242229';
-  }
-
-  // 等瀏覽器重新渲染後再列印
-  requestAnimationFrame(function() {
-    requestAnimationFrame(function() {
-      window.print();
-
-      // 列印完畢後還原
-      setTimeout(function() {
-        for (i = 0; i < editables.length; i++) {
-          editables[i].setAttribute('contenteditable', 'true');
-          editables[i].style.background = '';
-          editables[i].style.backgroundColor = '';
-          editables[i].style.color = '';
-        }
-        btn.disabled = false;
-        btn.textContent = '列印 / 存成 PDF';
-      }, 500);
-    });
+function loadScript(src) {
+  return new Promise(function(resolve, reject) {
+    if (document.querySelector('script[src="' + src + '"]')) { resolve(); return; }
+    var s = document.createElement('script');
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
   });
 }
+
+document.getElementById('btnPdf').addEventListener('click', function() {
+  var btn = this;
+  btn.disabled = true;
+  btn.textContent = '產生中…';
+
+  // 載入 html2canvas + jsPDF 後截圖轉 PDF
+  Promise.all([
+    loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'),
+    loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js')
+  ]).then(function() {
+    return html2canvas(document.getElementById('mainPage'), {
+      scale: 2,
+      backgroundColor: '#f7f6f4',
+      useCORS: true,
+      logging: false
+    });
+  }).then(function(canvas) {
+    var jsPDF = window.jspdf.jsPDF;
+    var pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    var imgW = 210;
+    var imgH = canvas.height * imgW / canvas.width;
+    var imgData = canvas.toDataURL('image/jpeg', 0.92);
+
+    var pageH = 297;
+    var y = 0;
+    while (y < imgH) {
+      if (y > 0) pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', 0, -y, imgW, imgH);
+      y += pageH;
+    }
+
+    pdf.save('會議記錄表.pdf');
+    showHint('✓ PDF 已下載！若沒有出現，請從下載列表確認。', 4000);
+  }).catch(function(err) {
+    console.error(err);
+    // 備用：嘗試 window.print()（桌機有效，iPhone 無效）
+    showHint('提示：在 iPhone 上請點右上角分享按鈕 → 列印 → 張開雙指放大預覽 → 可儲存為 PDF', 6000);
+    window.print();
+  }).finally(function() {
+    btn.disabled = false;
+    btn.textContent = '列印 / 存成 PDF';
+  });
+});
 </script>
 </body>
 </html>
