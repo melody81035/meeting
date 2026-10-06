@@ -62,7 +62,13 @@ h1 { font-weight: 500; font-size: 30px; letter-spacing: 0.02em; color: #242229; 
 .field-cell:nth-child(2) { border-bottom: 1px solid #d8d4dc; }
 .field-cell:nth-child(3) { border-right: 1px solid #d8d4dc; }
 .field-label { font-size: 11px; color: #6a5fc4; letter-spacing: 0.06em; margin-bottom: 6px; }
-.field-input { font-size: 14px; outline: none; min-height: 20px; color: #242229; }
+.field-input {
+  font-size: 14px;
+  outline: none;
+  min-height: 20px;
+  color: #242229;
+  background-color: #f7f6f4;
+}
 .field-input:focus { background: rgba(106,95,196,0.04); border-radius: 2px; }
 .content-area {
   border: 1px solid #d8d4dc;
@@ -71,21 +77,35 @@ h1 { font-weight: 500; font-size: 30px; letter-spacing: 0.02em; color: #242229; 
   flex-direction: column;
 }
 .content-label { font-size: 11px; color: #6a5fc4; letter-spacing: 0.06em; padding: 12px 16px 0; }
-.content-lines {
+
+/* 線條背景放在不可編輯的 wrapper，避開 Safari 的 contenteditable 黑背景 bug */
+.content-wrapper {
   flex: 1;
   margin: 0 16px 16px;
+  position: relative;
+  min-height: 500px;
   background-color: #f7f6f4;
   background-image: repeating-linear-gradient(
     to bottom,
-    #f7f6f4, #f7f6f4 27px,
-    #e3e0e6 28px
+    #f7f6f4 0px, #f7f6f4 27px,
+    #e3e0e6 27px, #e3e0e6 28px
   );
-  min-height: 500px;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.content-lines {
+  position: absolute;
+  inset: 0;
   outline: none;
   line-height: 28px;
   padding-top: 1px;
+  padding-left: 2px;
   font-size: 14px;
+  color: #242229;
+  background: none;
+  overflow: visible;
 }
+
 .page-footer {
   text-align: right;
   font-size: 11px;
@@ -94,21 +114,11 @@ h1 { font-weight: 500; font-size: 30px; letter-spacing: 0.02em; color: #242229; 
   padding-top: 4px;
 }
 
-/* ── 修復：Safari 列印/PDF 黑背景問題 ── */
 @media print {
   body { background: none; padding: 0; }
   .controls { display: none; }
-  .page {
-    box-shadow: none;
-    min-height: 297mm;
-    padding: 20mm 22mm 16mm;
-    background: #f7f6f4 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* 把 transparent 全部換成實際背景色，Safari 不會變黑 */
-  .content-lines {
+  .page { box-shadow: none; min-height: 297mm; padding: 20mm 22mm 16mm; }
+  .content-wrapper {
     background-color: #f7f6f4 !important;
     background-image: repeating-linear-gradient(
       to bottom,
@@ -118,8 +128,10 @@ h1 { font-weight: 500; font-size: 30px; letter-spacing: 0.02em; color: #242229; 
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-
-  [contenteditable],
+  .content-lines {
+    background: none !important;
+    color: #242229 !important;
+  }
   .field-input {
     background-color: #f7f6f4 !important;
     color: #242229 !important;
@@ -131,11 +143,11 @@ h1 { font-weight: 500; font-size: 30px; letter-spacing: 0.02em; color: #242229; 
 </head>
 <body>
 <div style="width:100%">
-  <div class="controls no-print">
-    <button class="btn-pdf" onclick="window.print()">列印 / 存成 PDF</button>
+  <div class="controls">
+    <button class="btn-pdf" id="btnPdf" onclick="doPrint()">列印 / 存成 PDF</button>
   </div>
   <div class="page-wrap">
-    <div class="page" lang="zh-Hant">
+    <div class="page" id="mainPage" lang="zh-Hant">
 
       <header>
         <h1>會議記錄表</h1>
@@ -163,7 +175,10 @@ h1 { font-weight: 500; font-size: 30px; letter-spacing: 0.02em; color: #242229; 
 
       <div class="content-area">
         <div class="content-label">會議內容</div>
-        <div class="content-lines" contenteditable="true"></div>
+        <!-- wrapper 負責畫線（非 contenteditable），lines 負責打字（無背景） -->
+        <div class="content-wrapper">
+          <div class="content-lines" contenteditable="true"></div>
+        </div>
       </div>
 
       <div class="page-footer">騰璧設計</div>
@@ -173,20 +188,40 @@ h1 { font-weight: 500; font-size: 30px; letter-spacing: 0.02em; color: #242229; 
 </div>
 
 <script>
-  /* Safari 列印前暫時移除 contenteditable，列印後還原 */
-  window.addEventListener('beforeprint', function () {
-    document.querySelectorAll('[contenteditable]').forEach(function (el) {
-      el.dataset.wasEditable = 'true';
-      el.removeAttribute('contenteditable');
-    });
-  });
+function doPrint() {
+  var btn = document.getElementById('btnPdf');
+  btn.disabled = true;
+  btn.textContent = '準備中…';
 
-  window.addEventListener('afterprint', function () {
-    document.querySelectorAll('[data-was-editable]').forEach(function (el) {
-      el.setAttribute('contenteditable', 'true');
-      delete el.dataset.wasEditable;
+  // 移除 contenteditable 並設定明確背景色
+  var editables = document.querySelectorAll('[contenteditable]');
+  var i;
+  for (i = 0; i < editables.length; i++) {
+    editables[i].removeAttribute('contenteditable');
+    editables[i].style.background = 'none';
+    editables[i].style.backgroundColor = 'transparent';
+    editables[i].style.color = '#242229';
+  }
+
+  // 等瀏覽器重新渲染後再列印
+  requestAnimationFrame(function() {
+    requestAnimationFrame(function() {
+      window.print();
+
+      // 列印完畢後還原
+      setTimeout(function() {
+        for (i = 0; i < editables.length; i++) {
+          editables[i].setAttribute('contenteditable', 'true');
+          editables[i].style.background = '';
+          editables[i].style.backgroundColor = '';
+          editables[i].style.color = '';
+        }
+        btn.disabled = false;
+        btn.textContent = '列印 / 存成 PDF';
+      }, 500);
     });
   });
+}
 </script>
 </body>
 </html>
