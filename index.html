@@ -7,13 +7,11 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   background: #f0eeec;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  min-height: 100vh;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Noto Sans TC', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Noto Sans TC', sans-serif;
   padding: 20px;
 }
+
+/* ── 按鈕列 ── */
 .controls {
   display: flex;
   justify-content: flex-end;
@@ -22,29 +20,33 @@ body {
 }
 .btn-pdf {
   background: #6a5fc4;
-  color: white;
+  color: #fff;
   border: none;
-  padding: 10px 20px;
+  padding: 10px 22px;
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
   font-family: inherit;
   -webkit-tap-highlight-color: transparent;
 }
-.btn-pdf:active { background: #5a4fb4; }
+.btn-pdf:active  { background: #5a4fb4; }
 .btn-pdf:disabled { background: #9b94d8; cursor: default; }
+
+/* ── 頁面外框 ── */
 .page-wrap { width: 100%; max-width: 794px; margin: 0 auto; }
 .page {
   width: 100%;
-  min-height: 1050px;
+  min-height: 1123px;   /* A4 @ 96 dpi */
   background: #f7f6f4;
   color: #242229;
-  padding: 56px 64px 40px;
+  padding: 56px 64px 48px;
   display: flex;
   flex-direction: column;
-  gap: 22px;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+  gap: 20px;
+  box-shadow: 0 2px 24px rgba(0,0,0,.12);
 }
+
+/* ── 標題 ── */
 header {
   display: flex;
   align-items: baseline;
@@ -52,116 +54,242 @@ header {
   border-bottom: 2px solid #6a5fc4;
   padding-bottom: 16px;
 }
-h1 { font-weight: 500; font-size: 30px; letter-spacing: 0.02em; color: #242229; }
-.subtitle { font-size: 12px; color: #8a8592; letter-spacing: 0.08em; }
+h1 { font-weight: 500; font-size: 30px; letter-spacing: .02em; }
+.subtitle { font-size: 12px; color: #8a8592; letter-spacing: .08em; }
+
+/* ── 資訊欄格 ── */
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   border: 1px solid #d8d4dc;
 }
-.field-cell { padding: 12px 16px; }
-.field-cell:nth-child(1) { border-bottom: 1px solid #d8d4dc; border-right: 1px solid #d8d4dc; }
+.field-cell { padding: 10px 14px; }
+.field-cell:nth-child(1),
 .field-cell:nth-child(2) { border-bottom: 1px solid #d8d4dc; }
+.field-cell:nth-child(1),
 .field-cell:nth-child(3) { border-right: 1px solid #d8d4dc; }
-.field-label { font-size: 11px; color: #6a5fc4; letter-spacing: 0.06em; margin-bottom: 6px; }
+.field-label {
+  font-size: 11px;
+  color: #6a5fc4;
+  letter-spacing: .06em;
+  margin-bottom: 6px;
+}
 .field-input {
   font-size: 14px;
   outline: none;
-  min-height: 20px;
+  min-height: 22px;
   color: #242229;
-  background-color: #f7f6f4;
+  background: transparent;
 }
-.field-input:focus { background: rgba(106,95,196,0.04); border-radius: 2px; }
+
+/* ── 日期欄（三格） ── */
+.date-field {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 14px;
+  color: #242229;
+  flex-wrap: nowrap;
+}
+.date-seg {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  font-family: inherit;
+  color: #242229;
+  text-align: center;
+  padding: 0;
+  -moz-appearance: textfield;
+}
+.date-seg::-webkit-outer-spin-button,
+.date-seg::-webkit-inner-spin-button { display: none; }
+#dateY        { width: 3.6em; }
+#dateM, #dateD { width: 2em; }
+
+/* ── 會議內容 ── */
 .content-area {
-  border: 1px solid #d8d4dc;
   flex: 1;
   display: flex;
   flex-direction: column;
+  border: 1px solid #d8d4dc;
+  min-height: 320px;
 }
-.content-label { font-size: 11px; color: #6a5fc4; letter-spacing: 0.06em; padding: 12px 16px 0; }
+.section-label {
+  font-size: 11px;
+  color: #6a5fc4;
+  letter-spacing: .06em;
+  padding: 12px 14px 4px;
+}
 .content-lines {
   flex: 1;
-  margin: 0 16px 16px;
+  margin: 0 14px 14px;
   background-color: #f7f6f4;
   background-image: repeating-linear-gradient(
     to bottom,
-    #f7f6f4 0px, #f7f6f4 27px,
+    #f7f6f4 0, #f7f6f4 27px,
     #e3e0e6 27px, #e3e0e6 28px
   );
-  min-height: 500px;
+  min-height: 260px;
   outline: none;
   line-height: 28px;
   padding-top: 1px;
+  padding-left: 2px;
   font-size: 14px;
   color: #242229;
+  word-break: break-word;
+  -webkit-user-select: text;
+  user-select: text;
 }
+
+/* ── 附件照片 ── */
+.photo-area {
+  border: 1px solid #d8d4dc;
+  padding: 10px 14px 14px;
+}
+.photo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.photo-add-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid #b0aab8;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #6a5fc4;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+.photo-add-label:active { background: rgba(106,95,196,.06); }
+.photo-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+/* 無照片提示 */
+.photo-grid:empty::after {
+  content: '尚未新增照片';
+  font-size: 12px;
+  color: #c0bac8;
+  padding: 4px 2px;
+}
+.photo-item {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+}
+.photo-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+}
+.photo-rm {
+  position: absolute;
+  top: 3px; right: 3px;
+  width: 20px; height: 20px;
+  background: rgba(0,0,0,.54);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+
+/* ── 頁腳 ── */
 .page-footer {
   text-align: right;
   font-size: 11px;
   color: #b0aab8;
-  letter-spacing: 0.1em;
-  padding-top: 4px;
+  letter-spacing: .1em;
 }
 
-/* 提示訊息 */
+/* ── Toast 提示 ── */
 #hint {
   display: none;
   position: fixed;
-  bottom: 20px;
+  bottom: 22px;
   left: 50%;
   transform: translateX(-50%);
-  background: #242229;
-  color: white;
-  padding: 12px 20px;
+  background: #1e1c24;
+  color: #fff;
+  padding: 12px 18px;
   border-radius: 8px;
   font-size: 13px;
+  line-height: 1.6;
   text-align: center;
-  z-index: 999;
+  z-index: 9999;
   max-width: 320px;
-  line-height: 1.5;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  width: calc(100% - 40px);
+  box-shadow: 0 4px 16px rgba(0,0,0,.28);
 }
 
+/* ── 列印備援（Safari桌機 / iOS分享→列印） ── */
 @media print {
-  body { background: none; padding: 0; }
-  .controls { display: none; }
-  #hint { display: none !important; }
-  .page { box-shadow: none; min-height: 297mm; padding: 20mm 22mm 16mm; background: #f7f6f4 !important; }
+  body { background: none !important; padding: 0 !important; }
+  .controls, #hint, .photo-add-label, .photo-rm { display: none !important; }
+  .page {
+    box-shadow: none !important;
+    min-height: 0 !important;
+    padding: 18mm 20mm 14mm !important;
+    background: #f7f6f4 !important;
+  }
   .content-lines {
     background-color: #f7f6f4 !important;
     background-image: repeating-linear-gradient(
-      to bottom, #f7f6f4 0px, #f7f6f4 27px, #e3e0e6 27px, #e3e0e6 28px
+      to bottom, #f7f6f4 0, #f7f6f4 27px, #e3e0e6 27px, #e3e0e6 28px
     ) !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
     color: #242229 !important;
-  }
-  .field-input {
-    background-color: #f7f6f4 !important;
-    color: #242229 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
   }
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 }
 </style>
 </head>
 <body>
+
 <div style="width:100%">
   <div class="controls">
     <button class="btn-pdf" id="btnPdf">列印 / 存成 PDF</button>
   </div>
   <div class="page-wrap">
     <div class="page" id="mainPage" lang="zh-Hant">
+
       <header>
         <h1>會議記錄表</h1>
         <div class="subtitle">MEETING MINUTES</div>
       </header>
+
       <div class="info-grid">
+
+        <!-- 日期：三格輸入，自動跳格 -->
         <div class="field-cell">
           <div class="field-label">日期</div>
-          <div class="field-input" contenteditable="true">____&nbsp;年&nbsp;&nbsp;____&nbsp;月&nbsp;&nbsp;____&nbsp;日</div>
+          <div class="date-field">
+            <input id="dateY" class="date-seg" type="text" maxlength="4"
+                   inputmode="numeric" autocomplete="off">
+            <span>年</span>
+            <input id="dateM" class="date-seg" type="text" maxlength="2"
+                   inputmode="numeric" autocomplete="off">
+            <span>月</span>
+            <input id="dateD" class="date-seg" type="text" maxlength="2"
+                   inputmode="numeric" autocomplete="off">
+            <span>日</span>
+          </div>
         </div>
+
         <div class="field-cell">
           <div class="field-label">會議名稱</div>
           <div class="field-input" contenteditable="true">&nbsp;</div>
@@ -174,11 +302,25 @@ h1 { font-weight: 500; font-size: 30px; letter-spacing: 0.02em; color: #242229; 
           <div class="field-label">記錄人</div>
           <div class="field-input" contenteditable="true">&nbsp;</div>
         </div>
+
       </div>
+
+      <!-- 會議內容 -->
       <div class="content-area">
-        <div class="content-label">會議內容</div>
+        <div class="section-label">會議內容</div>
         <div class="content-lines" contenteditable="true"></div>
       </div>
+
+      <!-- 附件照片 -->
+      <div class="photo-area">
+        <div class="photo-header">
+          <div class="section-label" style="padding:0">附件照片</div>
+          <label class="photo-add-label" for="photoInput">＋ 新增照片</label>
+          <input type="file" id="photoInput" accept="image/*" multiple style="display:none">
+        </div>
+        <div class="photo-grid" id="photoGrid"></div>
+      </div>
+
       <div class="page-footer">騰璧設計</div>
     </div>
   </div>
@@ -187,63 +329,174 @@ h1 { font-weight: 500; font-size: 30px; letter-spacing: 0.02em; color: #242229; 
 <div id="hint"></div>
 
 <script>
-function showHint(msg, duration) {
+/* ════════════════════════════════
+   日期欄：數字限制 + 自動跳格
+   ════════════════════════════════ */
+var dY = document.getElementById('dateY');
+var dM = document.getElementById('dateM');
+var dD = document.getElementById('dateD');
+
+function digitsOnly(el) { el.value = el.value.replace(/[^\d]/g,''); }
+
+dY.addEventListener('input', function(){
+  digitsOnly(this);
+  if (this.value.length >= 4) { this.value = this.value.slice(0,4); dM.focus(); }
+});
+dM.addEventListener('input', function(){
+  digitsOnly(this);
+  if (this.value.length >= 2) { this.value = this.value.slice(0,2); dD.focus(); }
+});
+dD.addEventListener('input', function(){
+  digitsOnly(this);
+  if (this.value.length > 2) this.value = this.value.slice(0,2);
+});
+/* 退格返回前一格 */
+dM.addEventListener('keydown', function(e){ if(e.key==='Backspace'&&!this.value) dY.focus(); });
+dD.addEventListener('keydown', function(e){ if(e.key==='Backspace'&&!this.value) dM.focus(); });
+
+/* ════════════════════════════════
+   照片上傳
+   ════════════════════════════════ */
+document.getElementById('photoInput').addEventListener('change', function(){
+  var grid = document.getElementById('photoGrid');
+  Array.from(this.files).forEach(function(f){
+    if (!f.type.startsWith('image/')) return;
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var item = document.createElement('div');
+      item.className = 'photo-item';
+      var img  = document.createElement('img');
+      img.src  = e.target.result;
+      var rm   = document.createElement('button');
+      rm.className   = 'photo-rm';
+      rm.textContent = '×';
+      rm.addEventListener('click', function(){ item.remove(); });
+      item.appendChild(img);
+      item.appendChild(rm);
+      grid.appendChild(item);
+    };
+    reader.readAsDataURL(f);
+  });
+  this.value = '';   /* 允許重複選同一張 */
+});
+
+/* ════════════════════════════════
+   工具函式
+   ════════════════════════════════ */
+function toast(msg, ms){
   var h = document.getElementById('hint');
   h.textContent = msg;
   h.style.display = 'block';
-  setTimeout(function() { h.style.display = 'none'; }, duration || 4000);
+  clearTimeout(h._tid);
+  h._tid = setTimeout(function(){ h.style.display='none'; }, ms || 4000);
 }
 
-function loadScript(src) {
-  return new Promise(function(resolve, reject) {
-    if (document.querySelector('script[src="' + src + '"]')) { resolve(); return; }
+function loadJS(src){
+  return new Promise(function(ok, fail){
+    if (document.querySelector('script[src="'+src+'"]')){ ok(); return; }
     var s = document.createElement('script');
-    s.src = src;
-    s.onload = resolve;
-    s.onerror = reject;
+    s.src = src; s.onload = ok; s.onerror = fail;
     document.head.appendChild(s);
   });
 }
 
-document.getElementById('btnPdf').addEventListener('click', function() {
+/* ════════════════════════════════
+   截圖轉 PDF（離屏 clone，固定 A4 寬度）
+   ════════════════════════════════ */
+function capturePageCanvas(){
+  var page = document.getElementById('mainPage');
+  var grid = document.getElementById('photoGrid');
+  var hasPhotos = grid.children.length > 0;
+
+  /* 深層複製頁面 DOM */
+  var clone = page.cloneNode(true);
+  clone.id   = '';
+
+  /* 將 input 的 value 補入 clone（cloneNode 不複製 .value） */
+  var origInputs  = page.querySelectorAll('input');
+  var cloneInputs = clone.querySelectorAll('input');
+  origInputs.forEach(function(inp, i){ cloneInputs[i].value = inp.value; });
+
+  /* 固定 A4 寬度，放到螢幕外 */
+  clone.style.cssText = [
+    'position:fixed',
+    'left:-9999px',
+    'top:0',
+    'width:794px',
+    'min-width:794px',
+    'min-height:1123px',
+    'box-shadow:none',
+  ].join(';');
+
+  /* 在 clone 裡隱藏介面按鈕 */
+  clone.querySelectorAll('.photo-rm, .photo-add-label').forEach(function(el){
+    el.style.display = 'none';
+  });
+
+  /* 無照片時隱藏整個照片區（含「尚未新增照片」空提示） */
+  if (!hasPhotos){
+    var pa = clone.querySelector('.photo-area');
+    if (pa) pa.style.display = 'none';
+  }
+
+  document.body.appendChild(clone);
+
+  return html2canvas(clone, {
+    scale       : 2,
+    backgroundColor: '#f7f6f4',
+    useCORS     : true,
+    allowTaint  : true,
+    logging     : false,
+    windowWidth : 794
+  }).then(function(canvas){
+    document.body.removeChild(clone);
+    return canvas;
+  }).catch(function(err){
+    document.body.removeChild(clone);
+    throw err;
+  });
+}
+
+/* ════════════════════════════════
+   按鈕點擊 → 產生 PDF
+   ════════════════════════════════ */
+document.getElementById('btnPdf').addEventListener('click', function(){
   var btn = this;
   btn.disabled = true;
   btn.textContent = '產生中…';
 
-  // 載入 html2canvas + jsPDF 後截圖轉 PDF
   Promise.all([
-    loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'),
-    loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js')
-  ]).then(function() {
-    return html2canvas(document.getElementById('mainPage'), {
-      scale: 2,
-      backgroundColor: '#f7f6f4',
-      useCORS: true,
-      logging: false
-    });
-  }).then(function(canvas) {
-    var jsPDF = window.jspdf.jsPDF;
-    var pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-    var imgW = 210;
-    var imgH = canvas.height * imgW / canvas.width;
+    loadJS('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'),
+    loadJS('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js')
+  ])
+  .then(capturePageCanvas)
+  .then(function(canvas){
+    var jsPDF  = window.jspdf.jsPDF;
+    var pdf    = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+    var pdfW   = 210;   /* A4 寬 mm  */
+    var pdfH   = 297;   /* A4 高 mm  */
+    var imgW   = pdfW;
+    var imgH   = canvas.height * pdfW / canvas.width;  /* 等比換算 */
     var imgData = canvas.toDataURL('image/jpeg', 0.92);
 
-    var pageH = 297;
+    /* 分頁：每 297mm 一頁 */
     var y = 0;
-    while (y < imgH) {
+    while (y < imgH){
       if (y > 0) pdf.addPage();
       pdf.addImage(imgData, 'JPEG', 0, -y, imgW, imgH);
-      y += pageH;
+      y += pdfH;
     }
 
     pdf.save('會議記錄表.pdf');
-    showHint('✓ PDF 已下載！若沒有出現，請從下載列表確認。', 4000);
-  }).catch(function(err) {
+    toast('✓ PDF 已產生，請至下載列表確認', 4000);
+  })
+  .catch(function(err){
     console.error(err);
-    // 備用：嘗試 window.print()（桌機有效，iPhone 無效）
-    showHint('提示：在 iPhone 上請點右上角分享按鈕 → 列印 → 張開雙指放大預覽 → 可儲存為 PDF', 6000);
+    /* 備援：提示 iOS 原生流程 + 嘗試 window.print() */
+    toast('⚠ 在 iPhone 請點右上角分享 → 列印 → 雙指展開預覽 → 再分享 → 儲存至「檔案」', 7000);
     window.print();
-  }).finally(function() {
+  })
+  .finally(function(){
     btn.disabled = false;
     btn.textContent = '列印 / 存成 PDF';
   });
